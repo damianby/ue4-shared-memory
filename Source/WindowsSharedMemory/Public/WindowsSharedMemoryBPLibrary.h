@@ -38,6 +38,10 @@ class UWindowsSharedMemoryBPLibrary : public UBlueprintFunctionLibrary
 
 
 	UFUNCTION(BlueprintCallable, Category = "Shared Memory")
-	static UTexture2D* CreateNewTexture2D(int32 Width, int32 Height);
+	static UTexture2D* CreateNewTexture2D(const int32& Width, const int32& Height);
 
+
+
+private:
+	static TArray<FString> SharedMemoryList;
 };

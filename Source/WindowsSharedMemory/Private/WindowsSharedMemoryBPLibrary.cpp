@@ -9,14 +9,23 @@ UWindowsSharedMemoryBPLibrary::UWindowsSharedMemoryBPLibrary(const FObjectInitia
 
 }
 
+TArray<FString> UWindowsSharedMemoryBPLibrary::SharedMemoryList;
+
+
 
 bool UWindowsSharedMemoryBPLibrary::CreateSharedMemory(USharedMemory*& SharedMemory, FString Name, int32 Size)
 {
+	if (SharedMemoryList.Contains(Name)) {
+		UE_LOG(MemoryLog, Log, TEXT("Shared Memory with given name exists!"));
+		return false;
+	}
 
+	SharedMemoryList.Add(Name);
 
 	SharedMemory = NewObject<USharedMemory>();
 	
 	if (!SharedMemory->CreateSharedMemory(Name, Size)) {
+		SharedMemory->BeginDestroy();
 		return false;
 	}
 
@@ -26,10 +35,17 @@ bool UWindowsSharedMemoryBPLibrary::CreateSharedMemory(USharedMemory*& SharedMem
 
 bool UWindowsSharedMemoryBPLibrary::OpenSharedMemory(USharedMemory*& SharedMemory, FString Name, int32 Size)
 {
+	if (SharedMemoryList.Contains(Name)) {
+		UE_LOG(MemoryLog, Log, TEXT("Shared Memory with given name exists!"));
+		return false;
+	}
+
+	SharedMemoryList.Add(Name);
 
 	SharedMemory = NewObject<USharedMemory>();
 
-	if (!SharedMemory->OpenSharedMemory(Name, Size)) {
+	if (SharedMemory->OpenSharedMemory(Name, Size)) {
+		SharedMemory->BeginDestroy();
 		return false;
 	}
 
@@ -38,7 +54,7 @@ bool UWindowsSharedMemoryBPLibrary::OpenSharedMemory(USharedMemory*& SharedMemor
 }
 
 
-UTexture2D* UWindowsSharedMemoryBPLibrary::CreateNewTexture2D(int32 Width, int32 Height)
+UTexture2D* UWindowsSharedMemoryBPLibrary::CreateNewTexture2D(const int32& Width, const int32& Height)
 {
 
 	UTexture2D* Texture = UTexture2D::CreateTransient(Width, Height, PF_B8G8R8A8);

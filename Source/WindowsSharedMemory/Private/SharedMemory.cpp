@@ -19,6 +19,26 @@ USharedMemory::USharedMemory()
 
 USharedMemory::~USharedMemory()
 {
+#ifdef WIN32
+	if (SharedMemoryMutex != nullptr)
+	{
+		ReleaseMutex(SharedMemoryMutex);
+		CloseHandle(SharedMemoryMutex);
+		SharedMemoryMutex = nullptr;
+	}
+
+	if (SharedMemoryData != nullptr)
+	{
+		UnmapViewOfFile(SharedMemoryData);
+		SharedMemoryData = nullptr;
+	}
+
+	if (SharedMemoryHandle != nullptr)
+	{
+		CloseHandle(SharedMemoryHandle);
+		SharedMemoryHandle = nullptr;
+	}
+#endif
 }
 
 
